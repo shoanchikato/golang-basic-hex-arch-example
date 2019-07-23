@@ -8,13 +8,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type ToyHandler interface {
+// Handler interface
+type Handler interface {
 	Get(w http.ResponseWriter, r *http.Request)
 	GetByID(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
 }
 
-func NewToyHandler(toyService Service) ToyHandler {
+// NewToyHandler inject service into handler
+func NewToyHandler(toyService Service) Handler {
 	return &toyHandler{
 		toyService,
 	}
@@ -24,11 +26,11 @@ type toyHandler struct {
 	toyService Service
 }
 
-func response(w http.ResponseWriter, data interface{}) {
+func response(w http.ResponseWriter, data interface{}, status int) {
 	response, _ := json.Marshal(data)
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(status)
 	_, _ = w.Write(response)
 }
 
@@ -37,7 +39,7 @@ func (h *toyHandler) Get(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("error when getting toys %v\n", err)
 	}
-	response(w, toys)
+	response(w, toys, http.StatusOK)
 }
 
 func (h *toyHandler) GetByID(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +49,7 @@ func (h *toyHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("error when getting one toy %v\n", err)
 	}
-	response(w, toy)
+	response(w, toy, http.StatusOK)
 }
 
 func (h *toyHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -58,5 +60,5 @@ func (h *toyHandler) Create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("error when creating toy %v\n", err)
 	}
-	response(w, toy)
+	response(w, toy, http.StatusCreated)
 }
