@@ -1,4 +1,5 @@
 git.env
 vendor/*
 !vendor/vendor.json
+bin
 database.db
